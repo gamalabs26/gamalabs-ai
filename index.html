@@ -23,8 +23,10 @@
 <link rel="preload" as="image" href="assets/img/hero-poster.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=5">
+<!-- fuentes sin bloquear el pintado: si Google Fonts tarda o falla, la pagina sale con fuentes de sistema -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap"></noscript>
+<link rel="stylesheet" href="assets/css/site.css?v=6">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"GamaLabs","legalName":"Silidriel SA de CV","url":"https://gamalabs.ai/","email":"hola@gamalabs.ai","areaServed":"MX","description":"Desarrollo de software con IA: agentes, sitios, apps y sistemas a la medida.",
 "hasOfferCatalog":{"@type":"OfferCatalog","name":"Precios publicados","itemListElement":[
@@ -322,6 +324,6 @@
   <p>Vista previa de diseño. El sitio oficial es <a href="https://gamalabs.ai/">gamalabs.ai</a>. Imágenes y video ilustrativos, generados.</p>
 </footer>
 
-<script src="assets/js/site.js?v=5" defer></script>
+<script src="assets/js/site.js?v=6" defer></script>
 </body>
 </html>
