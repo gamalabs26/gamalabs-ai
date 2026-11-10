@@ -15,6 +15,12 @@ $$('.lines,.rv').forEach(el => io.observe(el));
 
 /* formulario honesto: compone un correo, no guarda nada */
 const form = $('.form');
+const cNodos = $$('.c-n, .c-t');
+form.addEventListener('change', e => {
+  if (e.target.name !== 'linea') return;
+  const i = [...form.elements.linea].indexOf(e.target) - 1;
+  cNodos.forEach((n, k) => n.classList.toggle('apagado', i >= 0 && k % 5 !== i));
+});
 form.addEventListener('submit', e => {
   e.preventDefault();
   const f = new FormData(form);
@@ -175,7 +181,7 @@ function fOtros() {
   /* la cortina sube desde que asoma, no desde que se ancla: sin pantalla vacia */
   let r = cortina.getBoundingClientRect(); if (near(r)) cortina.style.setProperty('--k', ease(clamp((H - r.top) / cortina.offsetHeight)));
   r = cierre.getBoundingClientRect();
-  if (near(r)) cSvg.style.setProperty('--k', (1 - .86 * ease(clamp((H - r.top) / (H * .9)))).toFixed(3));
+  if (near(r)) cSvg.style.setProperty('--k', (1 + .3 * (1 - ease(clamp((H - r.top) / (H * .9))))).toFixed(3));
   const max = root.scrollHeight - innerHeight;
   barI.parentNode.style.setProperty('--p', max > 0 ? scrollY / max : 0);
   let act = 0;

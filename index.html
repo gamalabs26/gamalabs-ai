@@ -26,7 +26,7 @@
 <!-- fuentes sin bloquear el pintado: si Google Fonts tarda o falla, la pagina sale con fuentes de sistema -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap"></noscript>
-<link rel="stylesheet" href="assets/css/site.css?v=7">
+<link rel="stylesheet" href="assets/css/site.css?v=8">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"GamaLabs","legalName":"Silidriel SA de CV","url":"https://gamalabs.ai/","email":"hola@gamalabs.ai","areaServed":"MX","description":"Casa de software con IA con cinco líneas: GamaAgents, GamaGrowth, GamaApps, GamaStudio y GamaSoftware.",
 "department":[
@@ -369,7 +369,7 @@
   <div class="stage">
     <svg class="cierre-svg" viewBox="-300 -300 600 600" aria-hidden="true">
       <g class="c-rods"><path d="M0 0V-220M0 0L209.2-68M0 0L129.3 178M0 0L-129.3 178M0 0L-209.2-68"/></g>
-      <circle class="c-n" style="--x:0;--y:-220;--c:#3B82F6" r="14"/><circle class="c-n" style="--x:209.2;--y:-68;--c:#FFC107" r="14"/><circle class="c-n" style="--x:129.3;--y:178;--c:#06B6D4" r="14"/><circle class="c-n" style="--x:-129.3;--y:178;--c:#EF4444" r="14"/><circle class="c-n" style="--x:-209.2;--y:-68;--c:#22C55E" r="14"/>
+      <circle class="c-n" style="--x:0;--y:-220;--c:#3B82F6" r="14"/><circle class="c-n" style="--x:209.2;--y:-68;--c:#FFC107" r="14"/><circle class="c-n" style="--x:129.3;--y:178;--c:#06B6D4" r="14"/><circle class="c-n" style="--x:-129.3;--y:178;--c:#EF4444" r="14"/><circle class="c-n" style="--x:-209.2;--y:-68;--c:#22C55E" r="14"/><text class="c-t" style="--x:0;--y:-256">Agents</text><text class="c-t" style="--x:209.2;--y:-22">Growth</text><text class="c-t" style="--x:129.3;--y:224">Apps</text><text class="c-t" style="--x:-129.3;--y:224">Studio</text><text class="c-t" style="--x:-209.2;--y:-22">Software</text>
       <circle class="c-core" r="26"/>
     </svg>
     <div class="cierre-copy">
@@ -379,7 +379,7 @@
       <form class="form" action="mailto:hola@gamalabs.ai" method="post" enctype="text/plain">
         <label>Tu nombre<input name="nombre" autocomplete="name" required></label>
         <label>Tu correo<input name="correo" type="email" autocomplete="email" required></label>
-        <label class="full">La línea que te interesa<select name="linea"><option>Todavía no sé</option><option>GamaAgents</option><option>GamaGrowth</option><option>GamaApps</option><option>GamaStudio</option><option>GamaSoftware</option></select></label>
+        <fieldset class="full"><legend>La línea que te interesa</legend><div class="chips"><label class="chip"><input type="radio" name="linea" value="Todavía no sé" checked><span>Todavía no sé</span></label><label class="chip" style="--c:#3B82F6"><input type="radio" name="linea" value="GamaAgents"><span>Agents</span></label><label class="chip" style="--c:#FFC107"><input type="radio" name="linea" value="GamaGrowth"><span>Growth</span></label><label class="chip" style="--c:#06B6D4"><input type="radio" name="linea" value="GamaApps"><span>Apps</span></label><label class="chip" style="--c:#EF4444"><input type="radio" name="linea" value="GamaStudio"><span>Studio</span></label><label class="chip" style="--c:#22C55E"><input type="radio" name="linea" value="GamaSoftware"><span>Software</span></label></div></fieldset>
         <label class="full">Tu idea<textarea name="idea" rows="3" required placeholder="Ej.: quiero que mi negocio conteste WhatsApp en la noche"></textarea></label>
         <button class="btn magnetic" type="submit">Pedir propuesta sin costo</button>
         <p class="aviso full">Se abrirá tu correo con el mensaje listo para hola@gamalabs.ai. Esta vista previa no guarda datos.</p>
@@ -395,6 +395,6 @@
   <p>Vista previa de diseño. El sitio oficial es <a href="https://gamalabs.ai/">gamalabs.ai</a>. Imágenes y video ilustrativos, generados; las capturas de GamaStudio son de los sitios reales.</p>
 </footer>
 
-<script src="assets/js/site.js?v=7" defer></script>
+<script src="assets/js/site.js?v=8" defer></script>
 </body>
 </html>
