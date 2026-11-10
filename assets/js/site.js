@@ -53,7 +53,7 @@ const NODOS = [[0, -210], [199.7, -64.9], [123.4, 169.9], [-123.4, 169.9], [-199
 const I0 = .06, SL = .15, FIN = I0 + 5 * SL; // intro · cinco líneas, una a la vez · la casa completa
 const studio = $('#studio'), carril = $('.carril');
 const chat = $('#agents'), phone = $('.phone'), burb = $$('.burbujas li'), est = $$('.estaciones li'), capas = $$('.taller [data-depth]');
-const cortina = $('.cortina'), cierre = $('#contacto'), cSvg = $('.cierre-svg');
+const cuartos = $$('.cuarto'), cierre = $('#contacto'), cSvg = $('.cierre-svg');
 const barI = $('.bar i'), rail = $('.rail'), railLi = $$('.rail li'), caps = $$('[data-cap]');
 let W, H, geo = {}, mx = .5, tope = 0, dist = 0;
 
@@ -108,12 +108,11 @@ function fLineas() {
   lStage.style.setProperty('--to', s >= 0 && u < .9 ? 1 : 0);
   lin.style.setProperty('--ho', 1 - seg(p, .87, .91));
   svg.style.setProperty('--hl', .5 + .5 * seg(p, FIN - .02, FIN + .04)); svg.style.setProperty('--hs', 1 + .6 * seg(p, FIN - .02, FIN + .06));
-  /* corte de luz: el papel nace en el núcleo */
+  /* corte de luz: el primer cuarto nace en el núcleo */
   const z = seg(p, .87, 1), c = z * z * (3 - 2 * z), n = nucleo.getBoundingClientRect();
   const cx = n.left + n.width / 2, cy = n.top + n.height / 2;
   lStage.style.setProperty('--cx', cx + 'px'); lStage.style.setProperty('--cy', cy + 'px');
   lStage.style.setProperty('--r', (c * Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * 1.02).toFixed(1) + 'px');
-  rail.classList.toggle('claro', c > .6);
 }
 /* haz de luz por cada rayo: ventana de un linearGradient userSpaceOnUse */
 function haz(i, t) {
@@ -178,16 +177,15 @@ function fChat() {
 }
 
 function fOtros() {
-  /* la cortina sube desde que asoma, no desde que se ancla: sin pantalla vacia */
-  let r = cortina.getBoundingClientRect(); if (near(r)) cortina.style.setProperty('--k', ease(clamp((H - r.top) / cortina.offsetHeight)));
-  r = cierre.getBoundingClientRect();
+  /* cada cuarto mueve su lampara con el scroll: --rp va de 0 (asoma) a 1 (se va) */
+  cuartos.forEach(c => { const q = c.getBoundingClientRect(); if (near(q)) c.style.setProperty('--rp', clamp((H - q.top) / (H + q.height)).toFixed(3)); });
+  let r = cierre.getBoundingClientRect();
   if (near(r)) cSvg.style.setProperty('--k', (1 + .3 * (1 - ease(clamp((H - r.top) / (H * .9))))).toFixed(3));
   const max = root.scrollHeight - innerHeight;
   barI.parentNode.style.setProperty('--p', max > 0 ? scrollY / max : 0);
   let act = 0;
   caps.forEach((c, i) => { if (c.getBoundingClientRect().top < innerHeight * .5) act = i; });
   railLi.forEach((li, i) => { li.classList.toggle('on', i === act); li.firstChild.toggleAttribute('aria-current', i === act); });
-  if (act >= 2 && act <= 5) rail.classList.add('claro'); else if (act > 5 || act < 1) rail.classList.remove('claro');
   /* en tacto la linterna la mueve el scroll: barre la hoja de arriba abajo */
   r = marco.getBoundingClientRect();
   if (!FINO && near(r)) { stx = r.width / 2; sty = H * .5 - r.top; if (sx === null) { sx = stx; sy = sty; } }
