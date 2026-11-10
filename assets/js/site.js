@@ -18,7 +18,7 @@ const form = $('.form');
 form.addEventListener('submit', e => {
   e.preventDefault();
   const f = new FormData(form);
-  const body = 'Nombre: ' + f.get('nombre') + '\nCorreo: ' + f.get('correo') + '\n\n' + f.get('idea');
+  const body = 'Nombre: ' + f.get('nombre') + '\nCorreo: ' + f.get('correo') + '\nLínea: ' + f.get('linea') + '\n\n' + f.get('idea');
   location.href = 'mailto:hola@gamalabs.ai?subject=' + encodeURIComponent('Propuesta sin costo - ' + f.get('nombre')) + '&body=' + encodeURIComponent(body);
 });
 
@@ -28,38 +28,39 @@ const abrir = v => { marco.classList.toggle('abierta', v); verBtn.setAttribute('
 verBtn.addEventListener('click', () => abrir(!marco.classList.contains('abierta')));
 marco.addEventListener('click', () => { if (!FINO) abrir(true); });
 
-if (RM) { video.removeAttribute('autoplay'); video.pause(); abrir(true); verBtn.hidden = true; $('.precio .lead').textContent = 'Aquí cada división publica su precio.'; return; }
+if (RM) { video.removeAttribute('autoplay'); video.pause(); abrir(true); verBtn.hidden = true; $('.precio .lead').textContent = 'Aquí cada línea publica su precio.'; return; }
 root.classList.add('mo');
 /* escenas ancladas: el anclaje solo existe cuando hay motion */
 $$('.scene:not(.cierre)>.stage').forEach(st => { st.style.cssText += ';position: sticky;top:0'; });
 
-const hero = $('#nucleo'), hStage = $('.stage', hero), hMedia = $('.hero-media'), hCopy = $('.hero-copy'), vidrio = $('.vidrio'), bruma = $('.bruma');
-const chat = $('#mensaje'), phone = $('.phone'), burb = $$('.burbujas li'), est = $$('.estaciones li'), capas = $$('.taller [data-depth]');
-const red = $('#destinos'), svg = $('.red-svg svg'), rods = $$('.rod'), nucleo = $('.nucleo'), estados = $$('.estado');
+const hero = $('#casa'), hStage = $('.stage', hero), hMedia = $('.hero-media'), hCopy = $('.hero-copy'), vidrio = $('.vidrio'), bruma = $('.bruma');
+const lin = $('#lineas'), lStage = $('.stage', lin), svgBox = $('.red-svg'), svg = $('svg', svgBox), rods = $$('.rod'), nucleo = $('.nucleo');
+const paneles = $$('.linea'), puertas = $$('.puertas a');
+const COL = rods.map(r => r.style.getPropertyValue('--c'));
 const grads = rods.map((rod, i) => {
   if (i === 0) return $('#h0');
-  const g = $('#h0').cloneNode(true), c = rod.style.getPropertyValue('--c');
-  g.id = 'h' + i; g.children[3].setAttribute('stop-color', c); g.children[4].setAttribute('stop-color', c);
+  const g = $('#h0').cloneNode(true);
+  g.id = 'h' + i; g.children[3].setAttribute('stop-color', COL[i]); g.children[4].setAttribute('stop-color', COL[i]);
   $('#h0').parentNode.appendChild(g); return g;
 });
+const NODOS = [[0, -210], [199.7, -64.9], [123.4, 169.9], [-123.4, 169.9], [-199.7, -64.9]];
+const I0 = .06, SL = .15, FIN = I0 + 5 * SL; // intro · cinco líneas, una a la vez · la casa completa
+const studio = $('#studio'), carril = $('.carril');
+const chat = $('#agents'), phone = $('.phone'), burb = $$('.burbujas li'), est = $$('.estaciones li'), capas = $$('.taller [data-depth]');
 const cortina = $('.cortina'), cierre = $('#contacto'), cSvg = $('.cierre-svg');
-const viajero = $('.viajero'), barI = $('.bar i'), rail = $('.rail'), railLi = $$('.rail li'), caps = $$('[data-cap]');
-const NODOS = [[0, -220], [190.5, -110], [190.5, 110], [0, 220], [-190.5, 110], [-190.5, -110]];
-const PARES = [[0, 5], [2, 1], [3, 4]]; // encontrarte · responderte · operación
-let W, H, geo = {}, mx = .5, my = .5, tope = 0;
+const barI = $('.bar i'), rail = $('.rail'), railLi = $$('.rail li'), caps = $$('[data-cap]');
+let W, H, geo = {}, mx = .5, tope = 0, dist = 0;
 
 function measure() {
   W = innerWidth; H = hStage.offsetHeight;
-  const L = phone.offsetLeft, T = phone.offsetTop, w = phone.offsetWidth, h = phone.offsetHeight;
+  /* el núcleo luminoso del video vive al 66% x 45% del cuadro 1920x1080 */
   const s = Math.max(W / 1920, H / 1080), dw = 1920 * s, dh = 1080 * s, ox = W < 900 ? .62 : .5;
   const coreX = (W - dw) * ox + .66 * dw, coreY = (H - dh) * .5 + .45 * dh;
-  const dx = L + w / 2 - coreX, dy = T + h / 2 - coreY;
-  geo = { L, T, w, h, dx, dy };
+  const bw = svgBox.offsetWidth, nx = svgBox.offsetLeft + bw / 2, ny = svgBox.offsetTop + svgBox.offsetHeight / 2;
+  geo = { coreX, coreY, dx: nx - coreX, dy: ny - coreY, R0: Math.hypot(Math.max(coreX, W - coreX), Math.max(coreY, H - coreY)), rN: bw * 34 / 600 };
   const ol = burb[0].parentNode; tope = ol.offsetTop + ol.clientHeight - 14;
   burb.forEach(b => { b._t = b.offsetTop; b._h = b.offsetHeight; });
-  const ps = phone.style;
-  ps.setProperty('--bx', ((W - dw) * ox + dx - L) + 'px'); ps.setProperty('--by', ((H - dh) * .5 + dy - T) + 'px');
-  ps.setProperty('--bw', dw + 'px'); ps.setProperty('--bh', dh + 'px');
+  dist = Math.max(0, carril.offsetWidth - W);
 }
 const near = r => r.bottom > -H && r.top < H * 2;
 /* parallax por capas: cada capa se mueve segun su data-depth */
@@ -68,26 +69,44 @@ const parallax = (el, x, y) => { const k = +el.dataset.depth; el.style.transform
 /* progreso de una escena anclada: -rect.top / (alto - viewport) */
 function prog(el) { const r = el.getBoundingClientRect(); return [clamp(-r.top / (el.offsetHeight - H)), r]; }
 
-/* 2 · protagonista: seis destinos */
-function fRed() {
-  const r = red.getBoundingClientRect(); if (!near(r)) return;
-  const p = clamp(-r.top / (red.offsetHeight - H)), k = seg(p, .06, .8);
-  svg.style.transform = 'rotateY(' + (-16 + 32 * k).toFixed(2) + 'deg) rotateX(' + (8 - 10 * k).toFixed(2) + 'deg)';
-  const q = k * 3, s = p < .06 ? -1 : Math.min(2, Math.floor(q)), u = q - Math.max(s, 0);
+/* 0 · la casa: el video se condensa en un círculo que aterriza en el núcleo de las líneas */
+function fHero() {
+  const [p, r] = prog(hero); if (!near(r)) return;
+  const e = ease(p), g = geo;
+  parallax(hCopy, 0, -e * 240);
+  hCopy.style.opacity = vidrio.style.opacity = 1 - seg(p, 0, .45);
+  parallax(bruma, (mx - .5) * -40, -e * 240);
+  const rad = g.R0 + (g.rN - g.R0) * e;
+  hMedia.style.clipPath = 'circle(' + rad.toFixed(1) + 'px at ' + (g.coreX + g.dx * e).toFixed(1) + 'px ' + (g.coreY + g.dy * e).toFixed(1) + 'px)';
+  video.style.transform = 'translate3d(' + g.dx * e + 'px,' + g.dy * e + 'px,0)';
+}
+
+/* 1 · protagonista: cinco líneas, una a la vez. El rayo anterior se apaga antes de que prenda el siguiente */
+function fLineas() {
+  const r = lin.getBoundingClientRect(); if (!near(r)) return;
+  const pin = r.top <= 0;
+  lin.classList.toggle('pin', pin); hero.classList.toggle('fuera', pin && r.bottom > 0);
+  /* antes de anclar, el pentágono ya se asoma para recibir el círculo del video */
+  const as = pin ? 1 : seg(1 - r.top / (hero.offsetHeight - H), .45, .95);
+  lin.classList.toggle('asoma', !pin && as > 0); lin.style.setProperty('--as', as.toFixed(3));
+  const p = clamp(-r.top / (lin.offsetHeight - H)), todo = p >= FIN;
+  svg.style.transform = 'rotateY(' + (-12 + 24 * p).toFixed(2) + 'deg) rotateX(' + (6 - 8 * p).toFixed(2) + 'deg)';
+  const s = p < I0 || todo ? -1 : Math.min(4, Math.floor((p - I0) / SL)), u = s < 0 ? 0 : (p - I0 - s * SL) / SL;
   rods.forEach((rod, i) => {
-    const e = PARES.findIndex(par => par.includes(i));
-    let t = e < s || p >= .8 ? 1 : e === s ? seg(u, 0, .55) : 0;
-    haz(i, t);
-    rod.classList.toggle('on', e === s && t > .72 && p < .8);
-    rod.classList.toggle('ya', (e < s && p < .8) || p >= .8);
+    haz(i, i === s ? seg(u, 0, .3) : 0);
+    rod.classList.toggle('on', (i === s && u > .22 && u < .9) || todo);
   });
-  estados.forEach((el, i) => el.classList.toggle('on', i === s && p < .84));
-  red.style.setProperty('--ho', 1 - seg(p, .8, .86));
-  svg.style.setProperty('--hl', .5 + .5 * seg(p, .74, .82)); svg.style.setProperty('--hs', 1 + .6 * seg(p, .74, .84));
-  const z = seg(p, .84, 1), c = z * z * (3 - 2 * z), n = nucleo.getBoundingClientRect(), st = red.querySelector('.stage');
+  paneles.forEach((el, i) => el.classList.toggle('on', i === s && u > .18 && u < .92));
+  puertas.forEach((a, i) => a.classList.toggle('on', i === s));
+  if (s >= 0) lStage.style.setProperty('--tc', COL[s]);
+  lStage.style.setProperty('--to', s >= 0 && u < .9 ? 1 : 0);
+  lin.style.setProperty('--ho', 1 - seg(p, .87, .91));
+  svg.style.setProperty('--hl', .5 + .5 * seg(p, FIN - .02, FIN + .04)); svg.style.setProperty('--hs', 1 + .6 * seg(p, FIN - .02, FIN + .06));
+  /* corte de luz: el papel nace en el núcleo */
+  const z = seg(p, .87, 1), c = z * z * (3 - 2 * z), n = nucleo.getBoundingClientRect();
   const cx = n.left + n.width / 2, cy = n.top + n.height / 2;
-  st.style.setProperty('--cx', cx + 'px'); st.style.setProperty('--cy', cy + 'px');
-  st.style.setProperty('--r', (c * Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * 1.02).toFixed(1) + 'px');
+  lStage.style.setProperty('--cx', cx + 'px'); lStage.style.setProperty('--cy', cy + 'px');
+  lStage.style.setProperty('--r', (c * Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * 1.02).toFixed(1) + 'px');
   rail.classList.toggle('claro', c > .6);
 }
 /* haz de luz por cada rayo: ventana de un linearGradient userSpaceOnUse */
@@ -96,17 +115,25 @@ function haz(i, t) {
   g.setAttribute('x1', x * tail); g.setAttribute('y1', y * tail); g.setAttribute('x2', x * head); g.setAttribute('y2', y * head);
   rods[i].style.setProperty('--b', t <= 0 || t >= 1 ? 0 : 1);
 }
+/* puertas: cada línea se puede abrir directo, sin pasar por las otras */
+$$('[data-ir]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  const top = lin.getBoundingClientRect().top + scrollY;
+  scrollTo({ top: top + (lin.offsetHeight - H) * (I0 + SL * (+a.dataset.ir + .5)), behavior: 'smooth' });
+}));
 
-/* 0 · hero: el texto se va y el video se recorta al marco del teléfono */
-function fHero() {
-  const [p, r] = prog(hero); if (!near(r)) return;
-  const e = ease(p), { L, T, w, h, dx, dy } = geo;
-  parallax(hCopy, 0, -e * 240);
-  hCopy.style.opacity = vidrio.style.opacity = 1 - seg(p, 0, .45);
-  parallax(bruma, (mx - .5) * -40, -e * 240);
-  hMedia.style.clipPath = 'inset(' + T * e + 'px ' + (W - L - w) * e + 'px ' + (H - T - h) * e + 'px ' + L * e + 'px round ' + 34 * e + 'px)';
-  video.style.transform = 'translate3d(' + dx * e + 'px,' + dy * e + 'px,0)';
+/* 3 · las páginas de GamaStudio: carril horizontal anclado */
+function fStudio() {
+  const [p, r] = prog(studio); if (!near(r)) return;
+  carril.style.transform = 'translate3d(' + (-seg(p, .04, .96) * dist).toFixed(1) + 'px,0,0)';
 }
+/* con teclado, la tarjeta enfocada se trae al cuadro moviendo el scroll vertical */
+carril.addEventListener('focusin', e => {
+  const a = e.target.closest('.sitio'); if (!a || !dist) return;
+  carril.parentNode.scrollLeft = 0;
+  const q = clamp((a.offsetLeft - W * .2) / dist), top = studio.getBoundingClientRect().top + scrollY;
+  scrollTo({ top: top + (studio.offsetHeight - H) * (.04 + .92 * q) });
+});
 
 /* motor de estaciones (train-doors): cerrado .15 · abre .30 · pausa .40 · cierra .15 */
 function scrubStation(t, ultima) {
@@ -116,18 +143,17 @@ function scrubStation(t, ultima) {
   return 1 - ease((t - .85) / .15);
 }
 
-/* 1 · un mensaje: tres estaciones ancladas */
+/* 6 · GamaAgents de cerca: entra por su cuenta y luego tres estaciones ancladas */
 function fChat() {
   const [p, r] = prog(chat); if (!near(r)) return;
-  const pin = r.top <= 0;
-  chat.classList.toggle('pin', pin); hero.classList.toggle('fuera', pin && r.bottom > 0);
-  const i0 = ease(seg(p, 0, .1));
-  chat.style.setProperty('--pp', 1 - i0); chat.style.setProperty('--ui', i0); chat.style.setProperty('--t', i0);
+  const en = ease(clamp(1 - r.top / H));
+  chat.style.setProperty('--ui', en); chat.style.setProperty('--t', en);
+  phone.style.transform = 'translate3d(0,' + ((1 - en) * 70).toFixed(1) + 'px,0) scale(' + (.92 + .08 * en).toFixed(3) + ')';
   capas.forEach(el => parallax(el, (mx - .5) * -90, (p - .5) * -260));
-  const fin = ease(seg(p, .88, 1)), vis = new Map();
+  const vis = new Map();
   let fondo = 0;
   est.forEach((el, s) => {
-    const t = seg(p, .1 + s * .26, .36 + s * .26), door = scrubStation(t, s === 2);
+    const t = seg(p, .06 + s * .28, .34 + s * .28), door = scrubStation(t, s === 2);
     el.style.opacity = door;
     el.style.transform = 'translateX(' + ((1 - door) * (t < .5 ? 60 : -60)) + 'px)';
     const grupo = burb.filter(b => +b.dataset.st === s);
@@ -139,30 +165,10 @@ function fChat() {
   /* como un chat real: si ya no caben, las burbujas viejas suben */
   const sube = Math.max(0, fondo - tope);
   burb.forEach(b => {
-    const v = vis.get(b), out = b.classList.contains('out'), last = b.classList.contains('ultima');
-    b.style.opacity = last ? v * (1 - fin) : v;
-    b.style.transform = 'translate(' + ((1 - v) * (out ? 30 : -30)) + 'px,' + -sube + 'px) scale(' + (last ? 1 - .85 * fin : .96 + .04 * v) + ')';
+    const v = vis.get(b), out = b.classList.contains('out');
+    b.style.opacity = v;
+    b.style.transform = 'translate(' + ((1 - v) * (out ? 30 : -30)) + 'px,' + -sube + 'px) scale(' + (.96 + .04 * v) + ')';
   });
-  return fin;
-}
-
-/* match por posición: la última burbuja se vuelve pulso y entra al núcleo */
-function fViajero(fin) {
-  const rr = red.getBoundingClientRect(), vs = viajero.style;
-  const abajo = [W / 2, H * .94];
-  let x, y, o = 0;
-  if (rr.top > 0 && rr.top < H) {
-    const n = nucleo.getBoundingClientRect(), g = ease(1 - rr.top / H);
-    x = abajo[0] + (n.left + n.width / 2 - abajo[0]) * g; y = abajo[1] + (n.top + n.height / 2 - abajo[1]) * g; o = 1;
-  } else if (rr.top >= H && fin > 0) {
-    const b = burb[burb.length - 1].getBoundingClientRect();
-    x = b.left + b.width / 2 + (abajo[0] - b.left - b.width / 2) * fin; y = b.top + b.height / 2 + (abajo[1] - b.top - b.height / 2) * fin; o = fin;
-  } else if (rr.top <= 0) {
-    const p = -rr.top / (red.offsetHeight - H), n = nucleo.getBoundingClientRect();
-    x = n.left + n.width / 2; y = n.top + n.height / 2; o = 1 - seg(p, 0, .05);
-  }
-  vs.opacity = o;
-  if (o > 0) vs.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
 }
 
 function fOtros() {
@@ -175,7 +181,7 @@ function fOtros() {
   let act = 0;
   caps.forEach((c, i) => { if (c.getBoundingClientRect().top < innerHeight * .5) act = i; });
   railLi.forEach((li, i) => { li.classList.toggle('on', i === act); li.firstChild.toggleAttribute('aria-current', i === act); });
-  if (act >= 3 && act <= 5) rail.classList.add('claro'); else if (act > 5 || act < 2) rail.classList.remove('claro');
+  if (act >= 2 && act <= 5) rail.classList.add('claro'); else if (act > 5 || act < 1) rail.classList.remove('claro');
   /* en tacto la linterna la mueve el scroll: barre la hoja de arriba abajo */
   r = marco.getBoundingClientRect();
   if (!FINO && near(r)) { stx = r.width / 2; sty = H * .5 - r.top; if (sx === null) { sx = stx; sy = sty; } }
@@ -197,14 +203,14 @@ const senal = $('.senal');
 const lerp = (a, b, k) => a + (b - a) * k;
 let seguir = null, tx = -99, ty = -99, cx = -99, cy = -99, sx = null, sy = null, stx = 0, sty = -400;
 if (FINO) {
-  addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; mx = tx / W; my = ty / innerHeight; senal.classList.add('vivo'); kick(); }, { passive: true });
+  addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; mx = tx / W; senal.classList.add('vivo'); kick(); }, { passive: true });
   /* el punto sigue al cursor con retraso (lerp); devuelve si aun no llega */
   seguir = () => {
     cx = lerp(cx < -90 ? tx : cx, tx, .18); cy = lerp(cy < -90 ? ty : cy, ty, .18);
     senal.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
     return Math.abs(cx - tx) + Math.abs(cy - ty) > .4;
   };
-  d.addEventListener('mouseover', e => senal.classList.toggle('sobre', !!e.target.closest('a,button,summary,input,textarea')));
+  d.addEventListener('mouseover', e => senal.classList.toggle('sobre', !!e.target.closest('a,button,summary,input,textarea,select')));
   $$('.magnetic').forEach(b => {
     b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.transform = 'translate3d(' + (e.clientX - r.left - r.width / 2) * .22 + 'px,' + (e.clientY - r.top - r.height / 2) * .32 + 'px,0)'; });
     b.addEventListener('pointerleave', () => { b.style.transform = ''; });
@@ -217,7 +223,7 @@ let pend = false;
 function kick() { if (!pend) { pend = true; requestAnimationFrame(frame); } }
 function frame() {
   pend = false;
-  fHero(); const fin = fChat() || 0; fRed(); fViajero(fin); fOtros(); syncVideo();
+  fHero(); fLineas(); fStudio(); fChat(); fOtros(); syncVideo();
   let again = false;
   if (seguir && tx > -99) again = seguir();
   if (sx !== null) {
@@ -229,5 +235,6 @@ function frame() {
 }
 addEventListener('scroll', kick, { passive: true });
 addEventListener('resize', () => { measure(); kick(); });
+addEventListener('load', () => { measure(); kick(); });
 measure(); kick();
 })();
