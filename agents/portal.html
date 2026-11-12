@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="canonical" href="https://gamalabs.ai/agents/portal">
-  <link rel="alternate" hreflang="es-MX" href="https://gamalabs.ai/agents/portal">
-  <link rel="alternate" hreflang="x-default" href="https://gamalabs.ai/agents/portal">
+  <link rel="canonical" href="https://agents.gamalabs.ai/portal">
+  <link rel="alternate" hreflang="es-MX" href="https://agents.gamalabs.ai/portal">
+  <link rel="alternate" hreflang="x-default" href="https://agents.gamalabs.ai/portal">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Gama Agents — Portal</title>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="/agents/portal/manifest.json">
+  <link rel="manifest" href="/portal-app/manifest.json">
 
   <!-- Theme / Status Bar -->
   <meta name="theme-color" content="#7C3AED">
@@ -20,11 +20,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Gama Agents">
-  <link rel="apple-touch-icon" href="/agents/portal/icon-192.png">
+  <link rel="apple-touch-icon" href="/portal-app/icon-192.png">
 
   <!-- Windows / Edge -->
   <meta name="msapplication-TileColor" content="#060C1A">
-  <meta name="msapplication-TileImage" content="/agents/portal/icon-192.png">
+  <meta name="msapplication-TileImage" content="/portal-app/icon-192.png">
 
   <!-- SEO / OG básico -->
   <meta name="description" content="Portal de tu agente — conversaciones, leads, pedidos y citas">
@@ -34,7 +34,7 @@
   <meta property="og:locale" content="es_MX">
   <meta property="og:title" content="Gama Agents — Portal">
   <meta property="og:description" content="Portal de tu agente — conversaciones, leads, pedidos y citas">
-  <meta property="og:url" content="https://gamalabs.ai/agents/portal">
+  <meta property="og:url" content="https://agents.gamalabs.ai/portal">
   <meta property="og:image" content="https://agents.gamalabs.ai/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -46,7 +46,7 @@
 
   <!-- Favicon SVG inline -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Crect width='48' height='48' rx='13' fill='%230B1321'/%3E%3Cline x1='24' y1='24' x2='9' y2='10' stroke='%238B5CF6' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Cline x1='24' y1='24' x2='39' y2='10' stroke='%238B5CF6' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Cline x1='24' y1='24' x2='9' y2='38' stroke='%238B5CF6' stroke-width='1.3' stroke-linecap='round' opacity='0.35'/%3E%3Cline x1='24' y1='24' x2='39' y2='38' stroke='%238B5CF6' stroke-width='1.3' stroke-linecap='round' opacity='0.35'/%3E%3Ccircle cx='9' cy='10' r='3.2' fill='%233B82F6' opacity='0.75'/%3E%3Ccircle cx='39' cy='10' r='3.2' fill='%233B82F6' opacity='0.75'/%3E%3Ccircle cx='9' cy='38' r='2.6' fill='%233B82F6' opacity='0.45'/%3E%3Ccircle cx='39' cy='38' r='2.6' fill='%233B82F6' opacity='0.45'/%3E%3Ccircle cx='24' cy='24' r='5.5' fill='%233B82F6'/%3E%3Ccircle cx='24' cy='24' r='3.5' fill='%2360A5FA'/%3E%3C/svg%3E">
-  <link rel="icon" type="image/png" sizes="192x192" href="/agents/portal/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/portal-app/icon-192.png">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -3614,7 +3614,7 @@
   </div>
 </div>
 
-<script src="/original/agents/knowledge-status.js"></script>
+<script src="/portal-app/knowledge-status.js"></script>
 <script>
   document.querySelectorAll('.legal-year').forEach(el => { el.textContent = String(new Date().getFullYear()); });
   // Mismo default que PORTAL_URL en el backend (portal-url.js).
@@ -9164,7 +9164,7 @@ form.addEventListener('submit',async e=>{
   // Registrar service worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/agents/portal/sw.js', { scope: '/agents/portal/' })
+      navigator.serviceWorker.register('/portal-app/sw.js', { scope: '/portal-app/' })
         .then(reg => console.log('[PWA] SW registrado:', reg.scope))
         .catch(err => console.warn('[PWA] SW falló:', err));
     });
@@ -9467,6 +9467,6 @@ async function _applyAndDraft(texts) {
   _showToast('✅ Template listo — revísalo y haz clic en Publicar cuando estés listo', '#4ADE80', 4500);
 }
 </script>
-<script src="/agents/consent.js" defer></script>
+<script src="/portal-app/consent.js" defer></script>
 </body>
 </html>
